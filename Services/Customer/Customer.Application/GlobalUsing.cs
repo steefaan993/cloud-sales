@@ -1,0 +1,11 @@
+﻿global using Customer.Domain.Models;
+global using Customer.Domain.ValueObjects;
+global using BuildingBlocks.CQRS;
+global using Customer.Application.Data;
+global using Customer.Application.Dtos;
+global using Customer.Application.Exceptions;
+global using MediatR;
+global using Microsoft.Extensions.Logging;
+global using Customer.Domain.Events;
+global using Microsoft.EntityFrameworkCore;
+global using Customer.Application.Extensions;

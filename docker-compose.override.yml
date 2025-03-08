@@ -1,0 +1,119 @@
+version: '3.4'
+
+services:
+  customermanagerdb:
+    container_name: customermanagerdb
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${SQLSERVER_SA_PASSWORD}
+    restart: always
+    #ports:
+      #- "1433:1433"
+
+  catalogdb:
+    container_name: catalogdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=CatalogDb
+    restart: always
+    #ports:
+        #- "5432:5432"
+    volumes:
+      - postgres_catalog:/var/lib/postgresql/data/ 
+
+  messagebroker:
+    container_name: messagebroker
+    hostname: cloud-sales-mq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    restart: always
+    #ports:
+      #- "5672:5672"
+      #- "15672:15672"
+
+  customer.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      #- ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Database=Server=customermanagerdb;Database=CustomerManagerDb;User Id=sa;Password=${SQLSERVER_SA_PASSWORD};Encrypt=False;TrustServerCertificate=True
+      - MessageBroker__Host=amqp://cloud-sales-mq:5672
+      - MessageBroker__UserName=${RABBITMQ_USER}
+      - MessageBroker__Password=${RABBITMQ_PASSWORD}
+      - FeatureManagement__NotificationDelivery=false
+    depends_on:
+      - customermanagerdb
+      - messagebroker
+    #ports:
+      #- "6002:8080"
+      #- "6062:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  ccp.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      #- ASPNETCORE_HTTPS_PORTS=8081
+    #ports:
+      #- "6001:8080"
+      #- "6061:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+ 
+  catalog.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      #- ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Database=Server=catalogdb;Port=5432;Database=CatalogDb;User Id=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Include Error Detail=true
+      - DownloadSoftwareCatalog__RequestUrl=http://ccp.api:8080/ccp/software-catalog
+      - UpdateSoftwareCatalog_CronSchedule=0 0 0 ? * SUN
+    depends_on:
+      - catalogdb
+      - ccp.api
+    #ports:
+      #- "6003:8080"
+      #- "6063:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  purchase.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      #- ASPNETCORE_HTTPS_PORTS=8081
+      - MessageBroker__Host=amqp://cloud-sales-mq:5672
+      - MessageBroker__UserName=${RABBITMQ_USER}
+      - MessageBroker__Password=${RABBITMQ_PASSWORD}
+      - CCPClient__ServerBaseUrl=http://ccp.api:8080/ccp
+    depends_on:
+      - messagebroker
+      - ccp.api
+    ports:
+      - "6004:8080"
+      #- "6064:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  apigateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      #- ASPNETCORE_HTTPS_PORTS=8081
+    depends_on:
+      - customer.api
+      - catalog.api
+      - purchase.api
+    ports:
+      - "6010:8080"
+      #- "6060:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

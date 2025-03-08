@@ -1,0 +1,44 @@
+version: '3.4'
+
+services:
+  customermanagerdb:
+    image: mcr.microsoft.com/mssql/server
+
+  catalogdb:
+    image: postgres
+  
+  messagebroker:
+    image: rabbitmq:management
+
+  customer.api:
+    image: ${DOCKER_REGISTRY-}customerapi
+    build:
+      context: .
+      dockerfile: Services/Customer/Customer.API/Dockerfile
+      
+  ccp.api:
+    image: ${DOCKER_REGISTRY-}ccpapi
+    build:
+      context: .
+      dockerfile: Gateways/CCPGateway/CCP.MockAPI/Dockerfile
+
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+
+  purchase.api:
+    image: ${DOCKER_REGISTRY-}purchaseapi
+    build:
+      context: .
+      dockerfile: Services/Purchase/Purchase.API/Dockerfile
+
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: .
+      dockerfile: Gateways/APIGateway/Dockerfile
+
+volumes:
+  postgres_catalog:
