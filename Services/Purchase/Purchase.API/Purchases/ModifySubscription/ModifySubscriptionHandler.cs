@@ -3,7 +3,7 @@ using MassTransit;
 using Purchase.API.CCP;
 using Purchase.API.Dtos;
 
-namespace CCP.API.Subscriptions.ModifySubscription;
+namespace Purchase.API.Purchases.ModifySubscription;
 
 public record ModifySubscriptionCommand(Guid SubscriptionId, int Quantity)
     : ICommand<ModifySubscriptionResult>;

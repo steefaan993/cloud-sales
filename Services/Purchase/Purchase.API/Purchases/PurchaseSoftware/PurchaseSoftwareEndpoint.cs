@@ -1,6 +1,6 @@
-﻿namespace CCP.API.Subscriptions.PurchaseSoftware;
+﻿namespace Purchase.API.Purchases.PurchaseSoftware;
 
-public record PurchaseSoftwareRequest(Guid CustomerId, Guid AccountId, string SoftwareName, string Vendor, int PeriodInMohtns, int Quantity);
+public record PurchaseSoftwareRequest(Guid CustomerId, Guid AccountId, string SoftwareName, string Vendor, int PeriodInMonths, int Quantity);
 
 public class PurchaseSoftwareEndpoint : ICarterModule
 {

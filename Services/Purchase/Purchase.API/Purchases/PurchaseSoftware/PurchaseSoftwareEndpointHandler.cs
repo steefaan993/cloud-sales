@@ -3,9 +3,9 @@ using MassTransit;
 using Purchase.API.CCP;
 using Purchase.API.Dtos;
 
-namespace CCP.API.Subscriptions.PurchaseSoftware;
+namespace Purchase.API.Purchases.PurchaseSoftware;
 
-public record PurchaseSoftwareCommand(Guid CustomerId, Guid AccountId, string SoftwareName, string Vendor, int PeriodInMohtns, int Quantity)
+public record PurchaseSoftwareCommand(Guid CustomerId, Guid AccountId, string SoftwareName, string Vendor, int PeriodInMonths, int Quantity)
     : ICommand<PurchaseSoftwareResult>;
 
 internal class PurchaseSoftwareEndpointHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<PurchaseSoftwareCommand, PurchaseSoftwareResult>

@@ -1,4 +1,4 @@
-﻿namespace CCP.API.Subscriptions.ModifySubscription;
+﻿namespace Purchase.API.Purchases.ModifySubscription;
 
 public record ModifySubscriptionRequest(Guid SubscriptionId, int Quantity);
 

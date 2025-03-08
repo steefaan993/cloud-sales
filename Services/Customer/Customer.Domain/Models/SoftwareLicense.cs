@@ -41,7 +41,7 @@ public class SoftwareLicense : Entity<SoftwareLicenseId>
 
     public void Cancel()
     {
-        if (State is not (SubscriptionState.Expired or SubscriptionState.Suspended))
+        if (State is not (SubscriptionState.Expired or SubscriptionState.Terminated))
             State = SubscriptionState.Cancelled;
     }
 

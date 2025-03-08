@@ -3,7 +3,7 @@ using MassTransit;
 using Purchase.API.CCP;
 using Purchase.API.Dtos;
 
-namespace CCP.API.Subscriptions.ExtendSubscription;
+namespace Purchase.API.Purchases.ExtendSubscription;
 
 public record ExtendSubscriptionCommand(Guid SubscriptionId, DateTime ValidFrom, DateTime ValidTo, int ExtensionPeriodInMonths)
     : ICommand<ExtendSubscriptionResult>;

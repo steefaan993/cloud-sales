@@ -1,7 +1,7 @@
 ﻿using BuildingBlocks.Converters;
 using System.Text.Json.Serialization;
 
-namespace CCP.API.Subscriptions.ExtendSubscription;
+namespace Purchase.API.Purchases.ExtendSubscription;
 
 public record ExtendSubscriptionRequest(
     Guid SubscriptionId,

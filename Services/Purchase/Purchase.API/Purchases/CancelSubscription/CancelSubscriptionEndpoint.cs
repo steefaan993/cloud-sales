@@ -1,6 +1,4 @@
-﻿using Purchase.API.Purchases.CancelSubscription;
-
-namespace CCP.API.Subscriptions.CancelSubscription;
+﻿namespace Purchase.API.Purchases.CancelSubscription;
 
 public class CancelSubscriptionEndpoint : ICarterModule
 {

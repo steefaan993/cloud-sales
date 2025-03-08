@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace CCP.API.Subscriptions.PurchaseSoftware;
 
-public record PurchaseSoftwareRequest(string SoftwareName, string Vendor, int PeriodInMohtns, int Quantity);
+public record PurchaseSoftwareRequest(string SoftwareName, string Vendor, int PeriodInMonths, int Quantity);
 
 public record PurchaseSoftwareResponse(
     Guid SubscriptionId,
@@ -20,7 +20,7 @@ public class PurchaseSoftwareEndpoint : ICarterModule
     {
         app.MapPost("/ccp/purchase", (PurchaseSoftwareRequest request) =>
         {
-            return Results.Ok(new PurchaseSoftwareResponse(Guid.NewGuid(), request.SoftwareName, request.Vendor, DateTime.Now, DateTime.Now.AddMonths(request.PeriodInMohtns), request.Quantity));
+            return Results.Ok(new PurchaseSoftwareResponse(Guid.NewGuid(), request.SoftwareName, request.Vendor, DateTime.Now, DateTime.Now.AddMonths(request.PeriodInMonths), request.Quantity));
         })
 
         .WithName("PurchaseSoftware")
