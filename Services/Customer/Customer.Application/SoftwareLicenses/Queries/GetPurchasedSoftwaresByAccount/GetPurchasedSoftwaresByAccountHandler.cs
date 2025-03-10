@@ -13,7 +13,7 @@ public class GetPurchasedSoftwaresByAccountQueryValidator : AbstractValidator<Ge
     }
 }
 
-internal class GetPurchasedSoftwaresByAccountHandler(IApplicationDbContext dbContext)
+public class GetPurchasedSoftwaresByAccountHandler(IApplicationDbContext dbContext)
     : IQueryHandler<GetPurchasedSoftwaresByAccountQuery, GetPurchasedSoftwaresByAccountResult>
 {
     public async Task<GetPurchasedSoftwaresByAccountResult> Handle(GetPurchasedSoftwaresByAccountQuery query, CancellationToken cancellationToken)

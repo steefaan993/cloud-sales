@@ -8,7 +8,7 @@ namespace Purchase.API.Purchases.ModifySubscription;
 public record ModifySubscriptionCommand(Guid SubscriptionId, int Quantity)
     : ICommand<ModifySubscriptionResult>;
 
-internal class ModifySubscriptionHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<ModifySubscriptionCommand, ModifySubscriptionResult>
+public class ModifySubscriptionHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<ModifySubscriptionCommand, ModifySubscriptionResult>
 {
     public async Task<ModifySubscriptionResult> Handle(ModifySubscriptionCommand command, CancellationToken cancellationToken)
     {

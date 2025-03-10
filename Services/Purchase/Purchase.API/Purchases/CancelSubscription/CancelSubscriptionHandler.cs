@@ -9,7 +9,7 @@ public record CancelSubscriptionCommand(Guid SubscriptionId)
 
 public record CancelSubscriptionResult(Guid SubscriptionId, bool Success);
 
-internal class CancelSubscriptionHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<CancelSubscriptionCommand, CancelSubscriptionResult>
+public class CancelSubscriptionHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<CancelSubscriptionCommand, CancelSubscriptionResult>
 {
     public async Task<CancelSubscriptionResult> Handle(CancelSubscriptionCommand command, CancellationToken cancellationToken)
     {

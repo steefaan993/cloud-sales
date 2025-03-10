@@ -1,4 +1,10 @@
-﻿namespace Purchase.API.Purchases.PurchaseSoftware;
+﻿using BuildingBlocks.Messaging.Events;
+using MassTransit;
+using MassTransit.Transports;
+using Purchase.API.CCP;
+using Purchase.API.Dtos;
+
+namespace Purchase.API.Purchases.PurchaseSoftware;
 
 public record PurchaseSoftwareRequest(Guid CustomerId, Guid AccountId, string SoftwareName, string Vendor, int PeriodInMonths, int Quantity);
 
@@ -6,16 +12,36 @@ public class PurchaseSoftwareEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/purchase", async (PurchaseSoftwareRequest request, IServiceProvider serviceProvider) =>
+        app.MapPost("/purchase", (PurchaseSoftwareRequest request, BackgroundTaskQueue backgroundTaskQueue) =>
         {
-            var purchaseSwTask = Task.Run(async () =>
+            backgroundTaskQueue.PutTaskInQueue(async serviceProvider =>
             {
-                using var scope = serviceProvider.CreateScope();
-                var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-                await sender.Send(request.Adapt<PurchaseSoftwareCommand>());
+                var logger = serviceProvider.GetService<ILogger<PurchaseSoftwareEndpoint>>();
+                try
+                {
+                    using var scope = serviceProvider.CreateScope();
+                    var ccpClient = scope.ServiceProvider.GetRequiredService<CCPClient>();
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var cancellationToken = cancellationTokenSource.Token;
+                    var result = await ccpClient.PurchaseSoftwareAsync(new CCPPurchaseSoftwareRequest(request.SoftwareName, request.Vendor, request.PeriodInMonths, request.Quantity), cancellationToken);
+                    var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+                    await publishEndpoint.Publish(
+                        new SoftwarePurchasedEvent()
+                        {
+                            AccountId = request.AccountId,
+                            SubscriptionId = result.SubscriptionId,
+                            SoftwareName = result.SoftwareName,
+                            Vendor = result.Vendor,
+                            ValidFrom = result.ValidFrom,
+                            ValidTo = result.ValidTo,
+                            Quantity = result.Quantity
+                        }, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    logger?.LogError("Failed to purchase software: {exceptionMessage}", ex.Message);
+                }
             });
-
-            await Task.WhenAny(purchaseSwTask, Task.Delay(200));
 
             return Results.Ok();
         })

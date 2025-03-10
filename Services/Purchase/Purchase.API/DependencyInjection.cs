@@ -40,6 +40,9 @@ public static class DependencyInjection
                 });
         services.AddScoped<CCPClient>();
 
+        services.AddSingleton<BackgroundTaskQueue>();
+        services.AddHostedService<BackgroundWorker>();
+
         services.AddCarter();
 
         services.AddMessageBroker(configuration);
