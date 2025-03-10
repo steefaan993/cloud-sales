@@ -4,14 +4,16 @@ public class CancelSubscriptionEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/subscriptions/{subscriptionId}/cancel", (Guid subscriptionId, ISender sender, IServiceProvider serviceProvider) =>
+        app.MapPost("/subscriptions/{subscriptionId}/cancel", async (Guid subscriptionId, IServiceProvider serviceProvider) =>
         {
-            Task.Run(async () =>
+            var cancelSubTask = Task.Run(async () =>
             {
                 using var scope = serviceProvider.CreateScope();
                 var sender = scope.ServiceProvider.GetRequiredService<ISender>();
                 await sender.Send(new CancelSubscriptionCommand(subscriptionId));
             });
+
+            await Task.WhenAny(cancelSubTask, Task.Delay(200));
 
             return Results.Ok();
         })

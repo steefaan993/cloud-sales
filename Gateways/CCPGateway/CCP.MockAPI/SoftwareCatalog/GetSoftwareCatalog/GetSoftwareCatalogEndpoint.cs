@@ -10,10 +10,11 @@ public class GetSoftwareCatalogEndpoint : ICarterModule
     private static readonly List<Software> softwares =
     [
         new Software("Windows Server", "Microsoft", 75),
-        new Software("Microsoft Office 365", "Microsoft", 8),
+        new Software("Office 365", "Microsoft", 8),
         new Software("Azure Virtual Machines", "Microsoft", 70),
         new Software("SQL Server", "Microsoft", 120),
-        new Software("Power BI Pro", "Microsoft", 10),
+        new Software("Windows Server 2019", "Microsoft", 50),
+        new Software("Azure DevOps", "Microsoft", 30),
         new Software("AWS EC2", "Amazon", 45),
         new Software("Amazon RDS", "Amazon", 60),
         new Software("AWS Lambda", "Amazon", 20),
@@ -28,7 +29,14 @@ public class GetSoftwareCatalogEndpoint : ICarterModule
         new Software("Oracle Autonomous Database", "Oracle", 300),
         new Software("Oracle Cloud Storage", "Oracle", 20),
         new Software("Oracle WebLogic Server", "Oracle", 125),
-        new Software("Oracle Java SE", "Oracle", 25)
+        new Software("Oracle Java SE", "Oracle", 25),
+        new Software("Cisco WebEx", "Cisco", 25),
+        new Software("McAfee Total Protection", "McAfee", 25),
+        new Software("JIRA Software", "Attlasian", 15),
+        new Software("Confluence", "Attlasian", 15),
+        new Software("IntelliJ IDEA", "JetBrains", 20),
+        new Software("ReSharper", "JetBrains", 10),
+        new Software("PyCharm", "JetBrains", 20)
     ];
 
     public void AddRoutes(IEndpointRouteBuilder app)

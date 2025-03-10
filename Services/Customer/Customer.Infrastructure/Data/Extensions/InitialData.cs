@@ -120,7 +120,7 @@ internal class InitialData
             SoftwareLicense.Create(
                 SoftwareLicenseId.Of(Guid.Parse("dfad4d36-ea52-4d1f-b839-c01f9f0c0cf5")),
                 AccountId.Of(Guid.Parse("79eeb02c-c465-46d6-9d77-836f2d1a7a7a")),
-                "Google", "Google Cloud", 50, Guid.Parse("dfad4d36-ea52-4d1f-b839-c01f9f0c0cf5"), DateTime.Now, DateTime.Now.AddYears(1)
+                "Google", "Google Cloud Storage", 50, Guid.Parse("dfad4d36-ea52-4d1f-b839-c01f9f0c0cf5"), DateTime.Now, DateTime.Now.AddYears(1)
             ),
             SoftwareLicense.Create(
                 SoftwareLicenseId.Of(Guid.Parse("3b2e4b8b-604d-44a3-a8b6-079d4a60a96f")),

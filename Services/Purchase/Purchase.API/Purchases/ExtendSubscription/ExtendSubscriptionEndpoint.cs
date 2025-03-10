@@ -13,14 +13,16 @@ public class ExtendSubscriptionEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/subscriptions/{subscriptionId}/extend", (Guid subscriptionId, ExtendSubscriptionRequest request, IServiceProvider serviceProvider) =>
+        app.MapPost("/subscriptions/{subscriptionId}/extend", async (Guid subscriptionId, ExtendSubscriptionRequest request, IServiceProvider serviceProvider) =>
         {
-            Task.Run(async () =>
+            var extendSubTask = Task.Run(async () =>
             {
                 using var scope = serviceProvider.CreateScope();
                 var sender = scope.ServiceProvider.GetRequiredService<ISender>();
                 await sender.Send(request.Adapt<ExtendSubscriptionCommand>());
             });
+
+            await Task.WhenAny(extendSubTask, Task.Delay(200));
 
             return Results.Ok();
         })

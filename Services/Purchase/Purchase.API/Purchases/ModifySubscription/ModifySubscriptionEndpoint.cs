@@ -6,14 +6,16 @@ public class ModifySubscriptionEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/subscriptions/{subscriptionId}/modify", (Guid subscriptionId, ModifySubscriptionRequest request, IServiceProvider serviceProvider) =>
+        app.MapPost("/subscriptions/{subscriptionId}/modify", async (Guid subscriptionId, ModifySubscriptionRequest request, IServiceProvider serviceProvider) =>
         {
-            Task.Run(async () =>
+            var modifySubTask = Task.Run(async () =>
             {
                 using var scope = serviceProvider.CreateScope();
                 var sender = scope.ServiceProvider.GetRequiredService<ISender>();
                 await sender.Send(request.Adapt<ModifySubscriptionCommand>());
             });
+
+            await Task.WhenAny(modifySubTask, Task.Delay(200));
 
             return Results.Ok();
         })
