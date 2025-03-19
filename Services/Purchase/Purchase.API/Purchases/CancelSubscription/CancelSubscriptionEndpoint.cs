@@ -1,19 +1,38 @@
-﻿namespace Purchase.API.Purchases.CancelSubscription;
+﻿using BuildingBlocks.Messaging.Events;
+using MassTransit;
+using Purchase.API.CCP;
+using Purchase.API.Dtos;
+
+namespace Purchase.API.Purchases.CancelSubscription;
 
 public class CancelSubscriptionEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/subscriptions/{subscriptionId}/cancel", async (Guid subscriptionId, IServiceProvider serviceProvider) =>
+        app.MapPost("/subscriptions/{subscriptionId}/cancel", (Guid subscriptionId, BackgroundTaskQueue backgroundTaskQueue) =>
         {
-            var cancelSubTask = Task.Run(async () =>
+            backgroundTaskQueue.PutTaskInQueue(async serviceProvider =>
             {
-                using var scope = serviceProvider.CreateScope();
-                var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-                await sender.Send(new CancelSubscriptionCommand(subscriptionId));
+                var logger = serviceProvider.GetService<ILogger<CancelSubscriptionEndpoint>>();
+                try
+                {
+                    using var scope = serviceProvider.CreateScope();
+                    var ccpClient = scope.ServiceProvider.GetRequiredService<CCPClient>();
+                    var cancellationTokenSource = new CancellationTokenSource();
+                    var cancellationToken = cancellationTokenSource.Token;
+                    await ccpClient.CancelSubscriptionAsync(subscriptionId, cancellationToken);
+                    var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+                    await publishEndpoint.Publish(
+                        new SubscriptionCancelledEvent()
+                        {
+                            SubscriptionId = subscriptionId
+                        }, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    logger?.LogError("Failed to cancel subscription: {exceptionMessage}", ex.Message);
+                }
             });
-
-            await Task.WhenAny(cancelSubTask, Task.Delay(200));
 
             return Results.Ok();
         })

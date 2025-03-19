@@ -8,7 +8,7 @@ namespace Purchase.API.Purchases.PurchaseSoftware;
 public record PurchaseSoftwareCommand(Guid CustomerId, Guid AccountId, string SoftwareName, string Vendor, int PeriodInMonths, int Quantity)
     : ICommand<PurchaseSoftwareResult>;
 
-internal class PurchaseSoftwareHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<PurchaseSoftwareCommand, PurchaseSoftwareResult>
+public class PurchaseSoftwareHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<PurchaseSoftwareCommand, PurchaseSoftwareResult>
 {   
     public async Task<PurchaseSoftwareResult> Handle(PurchaseSoftwareCommand command, CancellationToken cancellationToken)
     {

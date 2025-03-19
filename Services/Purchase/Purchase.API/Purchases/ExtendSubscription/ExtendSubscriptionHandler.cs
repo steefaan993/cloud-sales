@@ -8,7 +8,7 @@ namespace Purchase.API.Purchases.ExtendSubscription;
 public record ExtendSubscriptionCommand(Guid SubscriptionId, DateTime ValidFrom, DateTime ValidTo, int ExtensionPeriodInMonths)
     : ICommand<ExtendSubscriptionResult>;
 
-internal class ExtendSubscriptionHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<ExtendSubscriptionCommand, ExtendSubscriptionResult>
+public class ExtendSubscriptionHandler(CCPClient ccpClient, IPublishEndpoint publishEndpoint) : ICommandHandler<ExtendSubscriptionCommand, ExtendSubscriptionResult>
 {
     public async Task<ExtendSubscriptionResult> Handle(ExtendSubscriptionCommand command, CancellationToken cancellationToken)
     {
